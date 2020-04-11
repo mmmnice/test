@@ -9,9 +9,12 @@ const appState={
     feedback:'',
     quizLength:0,
     timePassed:0,
-    currentScore:0
+    currentScore:0,
+    clock:"",
+    completedTime:""
     
 }
+const time =0;
 document.addEventListener('DOMContentLoaded', () =>{
     
 
@@ -27,10 +30,10 @@ let getQuiz= async(url) =>{
             appState.quizLength=result.length;
             console.log(appState.quizLength);
             generateQuiz(result);
-            if(appState.counter==0)
-            {
-                appState.timePassed=setInterval(setTime, 1000);
-            }
+            // if(appState.counter==0)
+            // {
+            //     setInterval(setTime, 1000);
+            // }
         }
         else if(appState.quizno == "quiz2")
         {
@@ -41,10 +44,10 @@ let getQuiz= async(url) =>{
             appState.quizLength=result.length;
             console.log(appState.quizLength);
             generateQuiz(result);
-            if(appState.counter==0)
-            {
-                appState.timePassed=setInterval(setTime, 1000);
-            }
+            // if(appState.counter==0)
+            // {
+            //     setInterval(setTime, 1000);
+            // }
         }
         //const response= await fetch("https://my-json-server.typicode.com/mmmnice/indiv_project_db/" +appState.quizno)
         
@@ -84,7 +87,6 @@ function generateQuestion(data){
            
         </form>
         <br>
-        Time: ${appState.timePassed}
         Score:${what}%`
         
     }
@@ -98,7 +100,6 @@ function generateQuestion(data){
         <input type="submit" value="submit">
         </form>
         <br>
-        Time: ${appState.timePassed}
         Score:${what}%`
 
     }
@@ -112,7 +113,6 @@ function generateQuestion(data){
         <input type = "submit" value= "submit">
         </form>
         <br>
-        Time: ${appState.timePassed}
         Score:${what}%`
     }
     else if(data.type == "fill in the blank")
@@ -124,7 +124,6 @@ function generateQuestion(data){
         <input type="submit" value="submit">
         </form>
         <br>
-        Time: ${appState.timePassed}
         Score:${what}%`
     }
     else if(data.type == "image")
@@ -140,7 +139,6 @@ function generateQuestion(data){
         <img src="${data.choices[2]}"><br>
         <input type= "submit" value = "submit">
         </form>
-        Time: ${appState.timePassed}
         Score:${what}%
         `
     }
@@ -161,6 +159,10 @@ function generateQuiz(data){
     document.querySelector("#feedback_view").style.display= 'none';
     document.querySelector("#quiz_view").innerHTML= generateQuestion(data[appState.counter]);
     document.querySelector("#quiz_view").style.display= 'block';
+    if(appState.counter==0)
+    {
+        timer();
+    }
     
     document.querySelector("#quiz_view").onsubmit =  () =>{
         appState.selectedAnswer=document.forms["quiz_answer_form"]["answer"].value;
@@ -225,20 +227,6 @@ function goodFeedback()
             endingscreen()
         }
     },1500)
-    // if (appState.counter<appState.quizLength){ 
-
-    //     getQuiz(); 
-   
-    // }
-
-    // else {
-
-    //     console.log("finished")
-    //     console.log(appState)
-        
-    //     endingscreen()
-    // }
-    //getQuiz();
 }
 function badFeedback()
 {
@@ -259,6 +247,7 @@ function badFeedback()
 //write logic for finding length with of the brought in quiz with the async function
 function endingscreen()
 {
+    clearInterval(setTime(),1000)
     console.log("does it even get here what is going on")
     document.querySelector("#quiz_view").style.display='none';
     document.querySelector("#feedback_view").style.display='none';
@@ -272,7 +261,8 @@ function endingscreen()
     `<h1> ${appState.name}, you have passed the test </h1><br>
     <h4> Your Score: ${percentage}%</h4><br>
     <ul>Correct: ${appState.correct}
-    <ul>Incorrect: ${appState.incorrect}<br>
+    <ul>Incorrect: ${appState.incorrect}
+    <ul> Time: ${appState.completedTime}
     <input type = "button" onclick= retake() value= "Retake Quiz"> <input type= "button" onclick=other() value= "Take the Other Quiz">
     `
     }
@@ -282,7 +272,8 @@ function endingscreen()
     `<h1> ${appState.name}, you have failed the test </h1><br>
     <h4> Your Score: ${percentage}%</h4><br>
     <ul>Correct: ${appState.correct}
-    <ul>Incorrect: ${appState.incorrect}<br>
+    <ul>Incorrect: ${appState.incorrect}
+    <ul> Total Seconds to complete: ${appState.timePassed}
     <input type = "button" onclick= retake() value= "Retake Quiz"> <input type= "button" onclick=other() value= "Take the Other Quiz">
     `
     }
@@ -316,16 +307,30 @@ function other()
     getQuiz()
 }
 
-//var minutesLabel = document.getElementById("minutes");
-//var secondsLabel = document.getElementById("seconds");
+
 //setInterval(setTime, 1000);
 
-function setTime() {
-  ++appState.timePassed;
-  //secondsLabel.innerHTML = pad(appState.timePassed % 60);
-  //minutesLabel.innerHTML = pad(parseInt(appState.timePassed / 60));
-}
+// function setTime() {
+//     var minutesLabel = document.getElementById("minutes");
+//     var secondsLabel = document.getElementById("seconds");
+//   ++appState.timePassed;
+//   secondsLabel.innerHTML = pad(appState.timePassed % 60);
+//   minutesLabel.innerHTML = pad(parseInt(appState.timePassed / 60));
 
+//   appState.completedTime=minutesLabel+ ":"+ secondsLabel; 
+// }
+function timer(){
+    clearInterval(time);
+    let seconds = 0;
+
+    time = setInterval(() => {
+        seconds++;
+        hours =  Math.floor(seconds/3600);
+        minutes = Math.floor(seconds/60);
+        document.querySelector("#timer").textContent=`Timer: ${minutes}:${seconds%60}`
+    }, 1000)
+
+}
 // function pad(val) {
 //   var valString = val + "";
 //   if (valString.length < 2) {
